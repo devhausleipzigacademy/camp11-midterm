@@ -11,8 +11,8 @@ export default {
         },
         white: {
           DEFAULT: '#FFFFFF',
-          heavy: '#1C1C27',
-          dimmed: '#363741',
+          heavy: '#494952',
+          dimmed: '#77777d',
         },
         error: '#EF4444',
         success: '#22C55E',
