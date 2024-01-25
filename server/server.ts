@@ -1,8 +1,7 @@
 import express from 'express';
 import 'dotenv/config';
 import cors from 'cors';
-import { LogInUser, createUser } from './controllers';
-//import { LogIn, Register } from './controllers';
+import { LogInUser, createUser } from './controller/user.controller';
 
 //serverport
 const PORT = process.env.PORT;
