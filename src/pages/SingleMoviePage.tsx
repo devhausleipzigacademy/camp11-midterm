@@ -27,9 +27,6 @@ function SingleMoviePage() {
 
   //toggle read more
   const [isOpen, setIsOpen] = useState(false);
-  const readMore = () => {
-    setIsOpen(!isOpen);
-  };
 
   // const clickHandler = () => {}
 
@@ -148,11 +145,14 @@ function SingleMoviePage() {
       <div className="flex flex-col gap-2 items-start">
         <span className="text-white font-bold text-sm">Synopsis</span>
         <p
-          className={cn('text-white-dimmed text-sm', isOpen && 'line-clamp-2')}
+          className={cn('text-white-dimmed text-sm', !isOpen && 'line-clamp-2')}
         >
           {movie?.overview}
         </p>
-        <button className="text-sm underline text-[#FFB43A]" onClick={readMore}>
+        <button
+          className="text-sm underline text-[#FFB43A]"
+          onClick={() => setIsOpen(!isOpen)}
+        >
           {isOpen ? 'Read less' : 'Read more'}
         </button>
       </div>
