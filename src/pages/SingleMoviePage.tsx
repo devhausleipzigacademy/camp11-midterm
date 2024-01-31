@@ -8,6 +8,7 @@ import { useEffect, useState } from 'react';
 import { useGetSingleMovie } from '../hooks/useGetSingleMovie';
 import notFoundImage from '../assets/whiteScreen_404unicornNotFound.png';
 import { cn } from '../utils/cn';
+import axios from 'axios';
 
 function SingleMoviePage() {
   //SingleMovie data
@@ -32,19 +33,18 @@ function SingleMoviePage() {
 
   const [favorite, setFavorite] = useState(false);
 
-  const fetchFavData = async () => {
+  const fetchSingleFavData = async () => {
     try {
-      const response = await fetch(
+      const response = await axios.get(
         `http://localhost:${PORT}/movies/${movieId}`,
         {
-          method: 'GET',
           headers: {
             'Content-Type': 'application/json',
           },
         }
       );
 
-      const data = await response.json();
+      const { data } = response;
       // console.log(data);
       setFavorite(data.message);
       return data.message;
@@ -74,7 +74,7 @@ function SingleMoviePage() {
   };
 
   useEffect(() => {
-    fetchFavData();
+    fetchSingleFavData();
   }, []);
 
   return (
