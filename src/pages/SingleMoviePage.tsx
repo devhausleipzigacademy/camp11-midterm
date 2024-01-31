@@ -29,8 +29,7 @@ function SingleMoviePage() {
   //toggle read more
   const [isOpen, setIsOpen] = useState(false);
 
-  // const clickHandler = () => {}
-
+  // toggle the heart icon
   const [favorite, setFavorite] = useState(false);
 
   const fetchSingleFavData = async () => {
@@ -55,18 +54,17 @@ function SingleMoviePage() {
 
   const switchFavData = async () => {
     try {
-      const response = await fetch(
+      const response = await axios.post(
         `http://localhost:${PORT}/movies/${movieId}`,
         {
-          method: favorite ? 'DELETE' : 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
         }
       );
 
-      const data = await response.json();
-      // console.log(data);
+      const { data } = response;
+      console.log(data);
       setFavorite(data.message);
     } catch (error) {
       console.error('Error:', error);
