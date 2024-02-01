@@ -8,6 +8,7 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { registerUser } from '../api/user';
 
 function RegisterPage() {
   const {
@@ -39,25 +40,14 @@ function RegisterPage() {
   const navigate = useNavigate();
 
   // handle submit
-
-  const onSubmit = async (data: TRegisterSchema) => {
-    try {
-      const response = await fetch('http://localhost:8000/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      });
-
-      const res = await response.json();
-      console.log(res); // handle the response data
+  async function onSubmit(userData: TRegisterSchema) {
+   
+    const {data} = await registerUser(userData)
+    if(data.user){
       navigate('/');
-      toast.success('Success Notification !', {
-        position: 'top-right',
-      });
-    } catch (error) {
-      console.error('Error:', error);
+       toast.success('Success Notification !', {
+         position: 'top-right',
+       });
     }
   };
 

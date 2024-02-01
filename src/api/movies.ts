@@ -82,6 +82,9 @@ type Array = {
   name: string;
 };
 
+const PORT = '8000';
+
+
 export async function getNowPlayingMovies() {
   const { data } = await axios.get<MovieResponse>(
     `https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en-US&page=1&sort_by=popularity.desc&with_release_type=2|3&release_date.gte=${minDate}&release_date.lte=${maxDate}`,
@@ -137,22 +140,19 @@ export async function getMovies(pageParam = 0, genres: string) {
 }
 
 export async function getMoviesByID() {
-  const PORT = 8000;
 
-  const fetchFavData = async () => {
+  const fetchAllFavData = async () => {
     try {
-      const response = await fetch(
+      const response = await axios.get(
         `http://localhost:${PORT}/bookmarked-movies/`,
         {
-          method: 'GET',
           headers: {
             'Content-Type': 'application/json',
           },
         }
       );
-
-      const data = await response.json();
-      //      console.log(data.message);
+      const { data } = response
+      // console.log(response.data.message)
       return data.message;
     } catch (error) {
       console.error('Error:', error);
@@ -162,7 +162,7 @@ export async function getMoviesByID() {
 
   const movies = [];
 
-  for (let movie of await fetchFavData()) {
+  for (let movie of await fetchAllFavData()) {
     //    console.log(movie);
     const { data } = await axios.get<SingleMovie>(
       `https://api.themoviedb.org/3/movie/${movie.movieId}?append_to_response=credits&language=en-US`,
@@ -177,3 +177,41 @@ export async function getMoviesByID() {
   }
   return movies;
 }
+
+
+
+export async function fetchSingleFavData(movieId: string){
+  try {
+    const response = await axios.get(
+      `http://localhost:${PORT}/movies/${movieId}`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    const { data } = response
+    console.log(response);
+    return data.message;
+  } catch (error) {
+    console.error('Error:', error);
+  }
+};
+
+export async function switchFavData(movieId: string){
+  try {
+    const response = await axios.post(
+      `http://localhost:${PORT}/movies/${movieId}`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
+    return response.data.message
+    
+  } catch (error) {
+    console.error('Error:', error);
+  }
+};

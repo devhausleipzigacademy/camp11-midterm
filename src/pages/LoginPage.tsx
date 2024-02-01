@@ -9,6 +9,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import GreetingHeader from '../components/GreetingHeader';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { loginUser } from '../api/user';
 
 function LoginPage() {
   const {
@@ -27,18 +28,10 @@ function LoginPage() {
   const navigate = useNavigate();
 
   // changed to const convention like in RegistrationForm so function submitHandler could be deleted
-  const onSubmit = async (data: TLoginSchema) => {
-    try {
-      const response = await fetch('http://localhost:8000/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      });
-
-      const res = await response.json();
-      console.log(res); // handle the response data
+  async function onSubmit(loginData: TLoginSchema) {
+      const { data } = await loginUser(loginData)
+      if(data.user){
+      console.log("User Data", data.user); // handle the response data
       toast.success(
         <span>
           Login successful! <br />
@@ -48,11 +41,8 @@ function LoginPage() {
           position: 'bottom-center',
           onClose: () => navigate('/home'),
           autoClose: 4000,
-        }
-      );
-    } catch (error) {
-      console.error('Error:', error);
-    }
+        });
+      }
   };
 
   return (

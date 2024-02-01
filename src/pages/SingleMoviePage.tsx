@@ -8,12 +8,13 @@ import { useEffect, useState } from 'react';
 import { useGetSingleMovie } from '../hooks/useGetSingleMovie';
 import notFoundImage from '../assets/whiteScreen_404unicornNotFound.png';
 import { cn } from '../utils/cn';
+import { fetchSingleFavData, switchFavData } from '../api/movies';
+import { string } from 'zod';
 
 function SingleMoviePage() {
   //SingleMovie data
   const { movieId } = useParams();
   const { movie } = useGetSingleMovie();
-  const PORT = '8000';
 
   // crew data
   const membersData = movie ? movie.credits.crew : [];
@@ -27,66 +28,39 @@ function SingleMoviePage() {
 
   //toggle read more
   const [isOpen, setIsOpen] = useState(false);
-  const readMore = () => {
-    setIsOpen(!isOpen);
-  };
-
   // const clickHandler = () => {}
-
   const [favorite, setFavorite] = useState(false);
 
-  const fetchFavData = async () => {
-    try {
-      const response = await fetch(
-        `http://localhost:${PORT}/movies/${movieId}`,
-        {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-
-      const data = await response.json();
-      // console.log(data);
-      setFavorite(data.message);
-      return data.message;
-    } catch (error) {
-      console.error('Error:', error);
-    }
-  };
-
-  const switchFavData = async () => {
-    try {
-      const response = await fetch(
-        `http://localhost:${PORT}/movies/${movieId}`,
-        {
-          method: favorite ? 'DELETE' : 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-
-      const data = await response.json();
-      // console.log(data);
-      setFavorite(data.message);
-    } catch (error) {
-      console.error('Error:', error);
-    }
-  };
-
   useEffect(() => {
-    fetchFavData();
+    if(movieId)
+    fetchSingleFavData(movieId)
+    .then(favStatus => {
+      setFavorite(favStatus);
+    })
+    .catch(error => {
+      console.error('Error fetching favorite status:', error);
+    })
   }, []);
 
+  const handleSwitchFavData = () => {
+    if(movieId)
+    switchFavData(movieId)
+    .then(newFavStatus => {
+      setFavorite(newFavStatus);
+    })
+    .catch(error => {
+      console.error('Error switching favorite status:', error);
+    })
+  }
+
+  
   return (
     <div className="flex flex-col gap-6">
       <div className="">
         <Header
           header="Movie Detail"
           icon={
-            <div onClick={switchFavData}>
+            <div onClick={handleSwitchFavData}>
               {favorite ? (
                 <FaHeart className="text-error" />
               ) : (
@@ -148,11 +122,11 @@ function SingleMoviePage() {
       <div className="flex flex-col gap-2 items-start">
         <span className="text-white font-bold text-sm">Synopsis</span>
         <p
-          className={cn('text-white-dimmed text-sm', isOpen && 'line-clamp-2')}
+          className={cn('text-white-dimmed text-sm', !isOpen && 'line-clamp-2')}
         >
           {movie?.overview}
         </p>
-        <button className="text-sm underline text-[#FFB43A]" onClick={readMore}>
+        <button className="text-sm underline text-[#FFB43A]" onClick={() => {setIsOpen(!isOpen)}}>
           {isOpen ? 'Read less' : 'Read more'}
         </button>
       </div>
