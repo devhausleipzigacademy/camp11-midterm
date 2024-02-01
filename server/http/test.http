@@ -6,4 +6,3 @@ GET  http://localhost:8000/login HTTP/1.1
 ###
 POST http://localhost:8000/reservation HTTP/1.1
 Content-Type: application/json
-

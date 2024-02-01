@@ -10,11 +10,13 @@ datasource db {
 model User {
   id        String   @id @default(uuid())
   firstName String
+  avatar String
   lastName  String
   email     String   @unique
   password  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  tickets Ticket[]
 }
 
 model Genres {
@@ -27,11 +29,13 @@ model Genres {
 
 model Ticket {
   id      Int      @id @default(autoincrement())
-  movieId Int
-  title   String
-  date    DateTime
+  movieId String
+  date    String
+  time    String
   seat    String[]
   price   Decimal
+  user User @relation(fields: [userId], references: [id])
+  userId String
 }
 
 model Favorite {

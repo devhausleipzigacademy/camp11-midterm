@@ -7,10 +7,11 @@ import { TicketInfo } from '../../pages/ReservationPage';
 import { cn } from '../../utils/cn';
 
 //onNextClick to render new UI
-type SelectTimePageProps = {
+type SelectSeatsPageProps = {
   onNextClick: () => void;
   updateSeatInfo: (seats: TicketInfo) => void;
   ticketInfo: TicketInfo;
+  reservationInfo: string[];
 };
 
 export type Seat = {
@@ -39,11 +40,16 @@ function SelectSeatsPage({
   onNextClick,
   updateSeatInfo,
   ticketInfo,
-}: SelectTimePageProps) {
+  reservationInfo,
+}: SelectSeatsPageProps) {
   const [seatsInfo, setSeatsInfo] = useState(() => generateSeats());
   const [isShown, setIsShown] = useState(false);
 
   const selectedSeats = seatsInfo.filter(seat => seat.isSelected);
+
+  // logic for checking via seatsName if seats are reserved
+  const isSeatReserved = (seatName: string) =>
+    reservationInfo.includes(seatName);
 
   function handleClick(seatId: number) {
     setSeatsInfo(prevSeats =>
@@ -66,12 +72,24 @@ function SelectSeatsPage({
       </div>
       <div className="grid grid-cols-9 gap-3 auto-rows-max">
         {seatsInfo.map((seat, idx) => {
-          if (!seat.name)
+          if (!seat.name) {
             return <div className="w-[28px] h-[28px]" key={idx}></div>;
+          }
 
-          return (
+          // we call isSeatReserved in here to determine if the current seat that gets rendered is reserved
+          const seatReserved = isSeatReserved(seat.name);
+
+          return seatReserved ? (
+            <div
+              className="w-[28px] h-[28px] bg-white text-white rounded text-xs"
+              key={idx}
+            >
+              {seat.name}
+            </div>
+          ) : (
             <button
-              className={cn('w-[28px] h-[28px] text-white-dimmed rounded text-xs',
+              className={cn(
+                'w-[28px] h-[28px] text-white-dimmed rounded text-xs',
                 seat.isSelected ? 'bg-[#FFB43A]' : 'bg-dark-light'
               )}
               key={idx}

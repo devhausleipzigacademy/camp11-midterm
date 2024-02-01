@@ -1,6 +1,13 @@
+import React, { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
 import Input from './Input';
 import Button from './Button';
-import React from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { RegisterSchema, TRegisterSchema } from '../validation/schemas';
+import {
+  ProfileSchema,
+  profileSchema,
+} from '../../server/schema/profileSchema';
 
 export type FormData = {
   firstName: string;
@@ -10,75 +17,68 @@ export type FormData = {
 
 type ProfileProps = {
   initialData: FormData;
-  onChange: (user: FormData) => void;
   onSubmit: (data: FormData) => void;
 };
 
-function ProfileForm({ initialData, onSubmit, onChange }: ProfileProps) {
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+function ProfileForm({ initialData, onSubmit }: ProfileProps) {
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors },
+  } = useForm<ProfileSchema>({
+    resolver: zodResolver(profileSchema),
+    defaultValues: initialData,
+  });
 
-    onSubmit(initialData);
+  const onSubmitHandler = (data: FormData) => {
+    onSubmit(data);
   };
+
+  useEffect(() => {
+    // Change user data, if initialData is changed
+    setValue('firstName', initialData.firstName);
+    setValue('lastName', initialData.lastName);
+    setValue('email', initialData.email);
+  }, [initialData, setValue]);
 
   return (
     <div className="flex flex-col h-full">
       <form
-        onSubmit={e => handleSubmit(e)}
+        onSubmit={handleSubmit(onSubmitHandler)}
         className="flex flex-col flex-grow gap-5 justify-between mb-[55px]"
       >
         <div className="flex flex-col gap-5">
           <Input
             id="firstName"
-            type="text"
             placeholder="First Name"
-            name="firstName"
-            value={initialData.firstName}
-            onChange={e =>
-              onChange({
-                ...initialData,
-                firstName: e.target.value,
-              })
-            }
+            autoComplete="given-name"
+            type="text"
+            error={errors.firstName}
+            {...register('firstName')}
           />
           <Input
             id="lastName"
-            type="text"
             placeholder="Last Name"
-            name="lastName"
-            value={initialData.lastName}
-            onChange={e =>
-              onChange({
-                ...initialData,
-                lastName: e.target.value,
-              })
-            }
+            autoComplete="family-name"
+            type="text"
+            error={errors.lastName}
+            {...register('lastName')}
           />
           <Input
             id="email"
-            type="email"
-            autoComplete="username"
             placeholder="Your Email"
-            name="email"
-            value={initialData.email}
-            onChange={e =>
-              onChange({
-                ...initialData,
-                email: e.target.value,
-              })
-            }
+            autoComplete="email"
+            type="email"
+            error={errors.email}
+            {...register('email')}
           />
         </div>
         <div className="flex gap-5">
           <Button variant="secondary" size="sm">
             Change Password?
           </Button>
-          <Button
-            //onClick={handleSubmit}
-            type="submit"
-            variant="primary"
-            size="sm"
-          >
+          <Button type="submit" variant="primary" size="sm">
             Save Changes
           </Button>
         </div>

@@ -7,7 +7,7 @@ type InputProps = React.InputHTMLAttributes<HTMLInputElement>;
 interface Props extends InputProps {
   id: string;
   icon?: React.ReactElement;
-  error?: FieldError | undefined;
+  error?: FieldError | undefined; // extended with "string"
   isRounded?: boolean;
 }
 

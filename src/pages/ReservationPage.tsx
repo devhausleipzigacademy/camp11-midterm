@@ -1,10 +1,12 @@
 import { useParams } from 'react-router-dom';
+import LoadingSpinner from '../components/LoadingSpinner';
 import TicketPreviewPage from '../components/reservation/TicketPreviewPage';
 import { useGetSingleMovie } from '../hooks/useGetSingleMovie';
 import SelectTimePage from '../components/reservation/SelectTimePage';
 import { useState } from 'react';
 import SelectSeatsPage from '../components/reservation/SelectSeatsPage';
 import { SingleMovie } from '../api/movies';
+import useGetReservations from '../hooks/useGetReservations';
 
 type selectPagesString =
   | 'selectTimePage'
@@ -18,13 +20,14 @@ export type TicketInfo = {
   seat: string[];
   time: string;
   movie: SingleMovie | undefined;
-  title: string;
 };
 
 function ReservationPage() {
   //fetched data
   const { movieId } = useParams();
   const { movie } = useGetSingleMovie();
+  // we need to call it reservations from useGetReservations()
+  const { reservations, isLoading, isError } = useGetReservations();
 
   //change current page
   const [currentPage, setCurrentPage] =
@@ -39,8 +42,20 @@ function ReservationPage() {
     seat: [''],
     time: '',
     movie,
-    title: movie?.title || '',
   });
+
+  // handle loading and error here, so we don't crash everything with undefined - also can't filter undefined reservations
+  if (isLoading || isError || !reservations) {
+    return <LoadingSpinner />;
+  }
+
+  const reservedSeats = reservations
+    .filter(
+      reservation =>
+        reservation.date === ticketInformation.date &&
+        reservation.time === ticketInformation.time
+    )
+    .flatMap(reservation => reservation.seat);
 
   return (
     <>
@@ -60,6 +75,7 @@ function ReservationPage() {
           }}
           updateSeatInfo={seats => updateTicketInformation(seats)}
           ticketInfo={ticketInformation}
+          reservationInfo={reservedSeats}
         />
       )}
       {currentPage === 'ticketPreviewPage' && (

@@ -3,4 +3,5 @@ export type genresLibraryType = {
   emoji: string;
   id: number;
   isSelected: boolean;
+  genreId: number;
 };
