@@ -30,7 +30,8 @@ function LoginPage() {
   // changed to const convention like in RegistrationForm so function submitHandler could be deleted
   async function onSubmit(loginData: TLoginSchema) {
       const { data } = await loginUser(loginData)
-      if(data.user){
+      console.log("user", data)
+      if(data.isLoggedIn){
       console.log("User Data", data.user); // handle the response data
       toast.success(
         <span>
