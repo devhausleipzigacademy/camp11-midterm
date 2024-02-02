@@ -13,6 +13,7 @@ export async function isAuth(req: Request, res: Response, next: NextFunction) {
     const { userId } = jwt.verify(token, process.env.JWT_SECRET!) as {
       userId: string;
     };
+
     const user = await prisma.user.findUnique({
       where: {
         id: userId,

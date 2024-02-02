@@ -20,12 +20,12 @@ import {
 } from './schema/createLoginRegisterSchema';
 
 import { isAuth } from './middleware/auth.middleware';
+import { checkAuth } from './controllers/checkAuth';
 import { initEdgeStore } from '@edgestore/server';
 import { createEdgeStoreExpressHandler } from '@edgestore/server/adapters/express';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import { profileSchema } from './schema/profileSchema';
-
 
 //import { LogIn, Register } from './controllers';
 
@@ -54,6 +54,9 @@ app.use(express.json());
 app.use(cors(corsOptions));
 app.use(cookieParser());
 app.use(bodyParser.json());
+
+//checkAuth
+app.get('/checkAuth', checkAuth);
 
 //post request
 app.post('/register', validate(registerSchema), createUser);

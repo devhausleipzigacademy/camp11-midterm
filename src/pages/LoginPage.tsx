@@ -10,8 +10,11 @@ import GreetingHeader from '../components/GreetingHeader';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { loginUser } from '../api/user';
+import { useContext } from 'react';
+import { checkAuthContext } from '../context/CheckAuthProvider';
 
 function LoginPage() {
+  const { setUserIsLoggedIn } = useContext(checkAuthContext);
   const {
     register,
     handleSubmit,
@@ -33,6 +36,12 @@ function LoginPage() {
       console.log("user", data)
       if(data.isLoggedIn){
       console.log("User Data", data.user); // handle the response data
+      };
+      setUserIsLoggedIn(res.data);
+      // handle the response data return isLogged in true or false
+      //get request /checkAuth after login
+      //useeffect runs [userIsLoggedIn]
+
       toast.success(
         <span>
           Login successful! <br />
